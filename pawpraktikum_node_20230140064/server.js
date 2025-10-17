@@ -3,8 +3,16 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const PORT = 3001;
+const morgan = require("morgan");
 
 
+// Impor router
+const presensiRoutes = require("./routes/presensi");
+const reportRoutes = require("./routes/reports");
+
+// ===== Gunakan fungsi baru =====
+app.use("/api/presensi", presensiRoutes);
+app.use("/api/reports", reportRoutes);
 
 // ===== Middleware =====
 app.use(cors()); // izinkan akses dari React (frontend)
