@@ -1,22 +1,15 @@
 // ===== Import Module =====
 const express = require('express');
 const cors = require('cors');
+const morgan = require("morgan");
 const app = express();
 const PORT = 3001;
-const morgan = require("morgan");
 
-
-// Impor router
-const presensiRoutes = require("./routes/presensi");
-const reportRoutes = require("./routes/reports");
-
-// ===== Gunakan fungsi baru =====
-app.use("/api/presensi", presensiRoutes);
-app.use("/api/reports", reportRoutes);
-
-// ===== Middleware =====
+// ===== Middleware global =====
 app.use(cors()); // izinkan akses dari React (frontend)
 app.use(express.json()); // parsing body JSON
+app.use(express.urlencoded({ extended: true })); // parsing form data
+app.use(morgan("dev"));
 
 // Middleware custom untuk logging
 app.use((req, res, next) => {
@@ -24,22 +17,26 @@ app.use((req, res, next) => {
   next();
 });
 
+// ===== Impor router =====
+const presensiRoutes = require("./routes/presensi");
+const reportRoutes = require("./routes/reports");
+const bookRoutes = require('./routes/books');
+
+// ===== Gunakan router =====
+app.use("/api/presensi", presensiRoutes);
+app.use("/api/reports", reportRoutes);
+app.use('/api/books', bookRoutes);
+
 // ===== Routing dasar =====
 app.get('/', (req, res) => {
   res.send('Home Page for API');
 });
 
-// ===== Routing CRUD Buku =====
-const bookRoutes = require('./routes/books');
-app.use('/api/books', bookRoutes);
-
 // ===== Middleware Error Handling =====
-// 404 handler
 app.use((req, res, next) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({ message: err.message || 'Internal Server Error' });
