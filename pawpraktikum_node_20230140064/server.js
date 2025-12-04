@@ -4,6 +4,7 @@ const cors = require('cors');
 const morgan = require("morgan");
 const app = express();
 const PORT = 3001;
+require('dotenv').config();
 
 // ===== Middleware global =====
 app.use(cors()); // izinkan akses dari React (frontend)

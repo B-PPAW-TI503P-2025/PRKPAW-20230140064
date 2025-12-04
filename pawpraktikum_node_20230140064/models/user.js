@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -11,37 +9,43 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // Definisikan relasi di sini jika ada
-      // Contoh: User.hasMany(models.Presensi, { foreignKey: 'userId' });
+      User.hasMany(models.Presensi, {
+        foreignKey: "userId",
+      });
+      as: "presensi";
     }
   }
-  User.init({
-    nama: {
-      type: DataTypes.STRING,
-      allowNull: false
+  User.init(
+    {
+      nama: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+          isEmail: true,
+        },
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      role: {
+        type: DataTypes.ENUM("mahasiswa", "admin"),
+        allowNull: false,
+        defaultValue: "mahasiswa",
+        validate: {
+          isIn: [["mahasiswa", "admin"]],
+        },
+      },
     },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true 
-      }
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    role: {
-      type: DataTypes.ENUM('mahasiswa', 'admin'), 
-      allowNull: false,
-      defaultValue: 'mahasiswa',
-      validate: {
-        isIn: [['mahasiswa', 'admin']] 
-      }
+    {
+      sequelize,
+      modelName: "User",
     }
-  }, {
-    sequelize,
-    modelName: 'User',
-  });
+  );
   return User;
 };
