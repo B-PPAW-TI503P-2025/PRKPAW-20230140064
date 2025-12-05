@@ -1,4 +1,5 @@
 // ===== Import Module =====
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const morgan = require("morgan");
@@ -11,6 +12,7 @@ app.use(cors()); // izinkan akses dari React (frontend)
 app.use(express.json()); // parsing body JSON
 app.use(express.urlencoded({ extended: true })); // parsing form data
 app.use(morgan("dev"));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Middleware custom untuk logging
 app.use((req, res, next) => {

@@ -1,4 +1,3 @@
-// reportController.js
 const { Presensi, User } = require("../models");
 const { Op } = require("sequelize");
 
@@ -7,7 +6,7 @@ exports.getDailyReport = async (req, res) => {
     const { nama, tanggalMulai, tanggalSelesai } = req.query;
     const where = {};
 
-    // Filter tanggal: jika ada, ubah menjadi rentang full-day (00:00:00 - 23:59:59)
+    // ====== FILTER TANGGAL ======
     if (tanggalMulai && tanggalSelesai) {
       const startDate = new Date(`${tanggalMulai}T00:00:00`);
       const endDate = new Date(`${tanggalSelesai}T23:59:59`);
@@ -38,55 +37,62 @@ exports.getDailyReport = async (req, res) => {
       where.checkIn = { [Op.lte]: endDate };
     }
 
-    // Build include for User and optional nama filter
+    // ====== RELASI USER + FILTER NAMA (optional) ======
     const userInclude = {
       model: User,
-      as: "user", // ← WAJIB karena relasi pakai alias
+      as: "user", // harus cocok dengan alias di model asosiasi
       attributes: ["id", "nama", "email"],
     };
 
     if (nama) {
-      userInclude.where = {
-        nama: { [Op.like]: `%${nama}%` },
-      };
-      userInclude.required = true;
+      userInclude.where = { nama: { [Op.like]: `%${nama}%` } };
+      userInclude.required = true; // supaya join hanya ambil user yang match
     }
 
-    // Ambil data (urut berdasarkan checkIn desc)
+    // ====== QUERY DATA ======
     const records = await Presensi.findAll({
       where,
       include: [userInclude],
+      attributes: [
+        "id",
+        "checkIn",
+        "checkOut",
+        "latitude",
+        "longitude",
+        "buktiFoto", // <--- tambahkan ini supaya ikut terkirim
+        "createdAt",
+        "updatedAt",
+      ],
       order: [["checkIn", "DESC"]],
     });
 
-    // Format response supaya frontend gampang pakai
+    // ====== FORMAT RESPONSE ======
     const data = records.map((r) => ({
       id: r.id,
-      user: r.User
-        ? user
-        : r.user
+      user: r.user
         ? {
             id: r.user.id,
             nama: r.user.nama,
             email: r.user.email,
           }
         : null,
-
       checkIn: r.checkIn,
       checkOut: r.checkOut,
       latitude: r.latitude,
       longitude: r.longitude,
+      buktiFoto: r.buktiFoto, // <--- tambahkan ini untuk frontend
       createdAt: r.createdAt,
       updatedAt: r.updatedAt,
     }));
 
-    res.json({
+    res.status(200).json({
+      success: true,
       reportDate: new Date().toLocaleDateString("id-ID"),
       totalData: data.length,
       data,
     });
   } catch (error) {
-    console.log("ERROR REPORT:", error);
+    console.error("ERROR REPORT:", error);
     res.status(500).json({
       message: "Gagal mengambil laporan",
       error: error.message,
