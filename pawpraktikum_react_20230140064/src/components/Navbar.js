@@ -48,7 +48,7 @@ function Navbar() {
               </span>
             </Link>
           </div>
-
+          <Link to="/monitoring" className="px-6 py-2.5 rounded-full font-medium transition-all text-gray-600 hover:bg-gray-50 hover:text-gray-900">Monitoring Suhu</Link>
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-3">
             <Link

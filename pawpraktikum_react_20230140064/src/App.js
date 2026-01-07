@@ -4,6 +4,7 @@ import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import DashboardPage from "./components/DashboardPage";
 import PresensiPage from "./components/PresensiPage";
+import SensorPage from './components/SensorPage';
 import ReportPage from "./components/ReportPage";
 import Navbar from "./components/Navbar";
 import "leaflet/dist/leaflet.css";
@@ -47,6 +48,14 @@ function App() {
                 <ReportPage />
               </MainLayout>
             }
+          />
+          <Route 
+            path="/monitoring" 
+            element={
+              <MainLayout>
+                <SensorPage />
+              </MainLayout>
+            } 
           />
           <Route path="/" element={<LoginPage />} />
         </Routes>
