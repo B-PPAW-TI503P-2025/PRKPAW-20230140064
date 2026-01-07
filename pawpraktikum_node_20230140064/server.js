@@ -25,12 +25,14 @@ const presensiRoutes = require("./routes/presensi");
 const reportRoutes = require("./routes/reports");
 const bookRoutes = require('./routes/books');
 const authRoutes = require('./routes/auth');
+const iotRoutes = require("./routes/iot");
 
 // ===== Gunakan router =====
 app.use("/api/presensi", presensiRoutes);
 app.use("/api/reports", reportRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/auth', authRoutes);
+app.use("/api/iot", iotRoutes);
 
 // ===== Routing dasar =====
 app.get('/', (req, res) => {
